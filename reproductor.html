@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reproductor Multimedia Amigable</title>
+
+    <style>
+        /* --- Variables Globales y Tema --- */
+        :root {
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            
+            /* Tema Claro (Default) - Colores más vibrantes */
+            --bg-color: #f8f9fa; /* Un blanco ligeramente más cálido */
+            --bg-color-secondary: #ffffff;
+            --text-color: #212529;
+            --text-color-muted: #6c757d;
+            --border-color: #dee2e6;
+            
+            /* Colores llamativos (Púrpura) */
+            --accent-color: #8E44AD; /* Púrpura (Wisteria) */
+            --accent-color-hover: #732d91; /* Púrpura más oscuro */
+            --danger-color: #e74c3c; /* Rojo (Alizarin) */
+            
+            /* Sombras más suaves */
+            --shadow-color: rgba(0, 0, 0, 0.08); 
+        }
+
+        /* Tema Oscuro */
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --bg-color-secondary: #1e1e1e;
+            --text-color: #e0e0e0;
+            --text-color-muted: #999;
+            --border-color: #444;
+            
+            /* Colores llamativos (Violeta) */
+            --accent-color: #BB86FC; /* Violeta (Material Design) */
+            --accent-color-hover: #a16efc;
+            --danger-color: #f16a5c; /* Rojo más suave para modo oscuro */
+            
+            --shadow-color: rgba(0, 0, 0, 0.3);
+        }
+
+        /* --- Reseteo Básico y Estilos Globales --- */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        h1, h2, h3 {
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        /* Botones, inputs más redondeados y amigables */
+        button, input, select {
+            font: inherit;
+            background-color: var(--bg-color-secondary);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px; /* Más redondeado */
+            padding: 0.6rem 0.8rem; /* Un poco más de espacio */
+        }
+
+        button {
+            cursor: pointer;
+            background-color: var(--accent-color);
+            color: #ffffff;
+            border-color: var(--accent-color);
+            transition: background-color 0.2s;
+        }
+
+        button:hover, button:focus {
+            background-color: var(--accent-color-hover);
+            border-color: var(--accent-color-hover);
+            outline: none;
+        }
+
+        button:focus-visible, input:focus-visible, select:focus-visible {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        ul { list-style: none; }
+        .hidden { display: none; }
+
+        /* --- Encabezado y Switch de Tema --- */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: var(--bg-color-secondary);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px var(--shadow-color); /* Sombra más suave */
+        }
+
+        .theme-switcher {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Interruptor de tema más suave */
+        input[type="checkbox"]#theme-toggle {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 44px; /* Un poco más ancho */
+            height: 24px;
+            background-color: var(--border-color);
+            border-radius: 12px; /* Totalmente redondeado */
+            position: relative;
+            cursor: pointer;
+            outline: none;
+            transition: background-color 0.2s;
+        }
+        input[type="checkbox"]#theme-toggle::before {
+            content: '';
+            width: 18px; /* Círculo interior */
+            height: 18px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            transition: transform 0.2s;
+        }
+        input[type="checkbox"]:checked#theme-toggle {
+            background-color: var(--accent-color);
+        }
+        input[type="checkbox"]:checked#theme-toggle::before {
+            transform: translateX(20px);
+        }
+
+
+        /* --- Contenedor Principal (Layout) --- */
+        .app-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            padding: 1.5rem;
+        }
+
+        /* Columnas mucho más redondeadas */
+        .player-column, .playlist-column, .calendar-column {
+            background-color: var(--bg-color-secondary);
+            border-radius: 16px; /* Muy redondeado */
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            flex-shrink: 0;
+            box-shadow: 0 5px 15px var(--shadow-color); /* Sombra más suave */
+        }
+
+        .player-column { flex-basis: 340px; flex-grow: 1; }
+        .playlist-column { flex-basis: 300px; flex-grow: 1; }
+        .calendar-column { flex-basis: 400px; flex-grow: 2; }
+
+        /* --- Reproductor --- */
+        .player-container video {
+            width: 100%;
+            background-color: #000;
+            border-radius: 12px; /* Redondeado */
+            margin-bottom: 1rem;
+            display: block; 
+            aspect-ratio: 16 / 9; 
+        }
+
+        .player-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+        .volume-container input[type="range"] {
+            width: 80px;
+        }
+        /* Botón de pantalla completa redondeado */
+        #fullscreen-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            font-size: 1.25rem;
+            padding: 0.25rem 0.5rem;
+            width: 44px; /* Ajustado al padding de otros botones */
+            height: 44px;
+            text-align: center;
+            border-radius: 8px; /* Redondeado */
+        }
+
+        .progress-container {
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        .progress-container progress {
+            width: 100%;
+        }
+
+        /* --- Carga de Archivos --- */
+        .file-loader {
+            margin-bottom: 1rem;
+        }
+        .file-label {
+            display: inline-block;
+            padding: 0.6rem 0.8rem;
+            background-color: var(--accent-color);
+            color: #fff;
+            border-radius: 8px; /* Redondeado */
+            cursor: pointer;
+            text-align: center;
+            width: 100%;
+        }
+        .file-label:hover {
+            background-color: var(--accent-color-hover);
+        }
+        input[type="file"] { display: none; }
+        #file-warning {
+            font-size: 0.8rem;
+            color: var(--text-color-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* --- Lista de Reproducción --- */
+        .playlist-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 12px; /* Redondeado */
+        }
+        .playlist-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            cursor: grab;
+            user-select: none;
+            gap: 0.5rem;
+        }
+        .playlist-item:last-child { border-bottom: none; }
+        .playlist-item:hover { background-color: var(--bg-color); }
+
+        .playlist-item.playing {
+            background-color: var(--accent-color);
+            color: #fff;
+            font-weight: bold;
+        }
+        .playlist-item span {
+            flex-grow: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .playlist-item button {
+            background-color: var(--danger-color);
+            border: none;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.9rem;
+            border-radius: 6px; /* Redondeado */
+            flex-shrink: 0;
+        }
+        .playlist-item.dragging { opacity: 0.5; }
+
+        /* --- Calendario --- */
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .calendar-header h3 { margin: 0; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; background-color: var(--border-color); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
+        .calendar-day, .calendar-header-day { padding: 0.5rem; background-color: var(--bg-color-secondary); min-height: 70px; font-size: 0.9rem; }
+        .calendar-header-day { font-weight: bold; text-align: center; min-height: auto; padding: 0.75rem 0.5rem; background-color: var(--bg-color); }
+        .calendar-day.other-month { color: var(--text-color-muted); background-color: var(--bg-color); }
+        .calendar-day.today { background-color: var(--accent-color-hover); color: #fff; font-weight: bold; border-radius: 4px; }
+        .calendar-day-event { background-color: var(--accent-color); color: #fff; padding: 2px 5px; font-size: 0.75rem; border-radius: 6px; /* Redondeado */ margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+
+        /* --- Formulario de Eventos --- */
+        .event-manager { margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.25rem; font-weight: 500; }
+        .form-group input, .form-group select { width: 100%; }
+        #delete-event-btn { background-color: var(--danger-color); margin-left: 0.5rem; }
+
+        /* --- Media Queries (Responsividad) --- */
+        @media (max-width: 1024px) {
+            .app-container { flex-direction: column; }
+            .player-column, .playlist-column, .calendar-column { flex-basis: 100%; }
+            .calendar-column { order: 3; }
+        }
+
+        @media (max-width: 600px) {
+            .app-header { padding: 1rem; }
+            .app-container { padding: 0.5rem; }
+            .player-column, .playlist-column, .calendar-column { padding: 1rem; }
+            .player-controls { justify-content: center; }
+            .volume-container { margin-left: 0; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header class="app-header">
+        <h1>Reproductor Multimedia</h1>
+        <div class="theme-switcher">
+            <label for="theme-toggle">Modo Oscuro</label>
+            <input type="checkbox" id="theme-toggle" aria-label="Cambiar a modo oscuro">
+        </div>
+    </header>
+
+    <main class="app-container">
+
+        <section class="player-column">
+            <h2>Reproductor</h2>
+            <div class="player-container">
+                <video id="media-player"></video>
+            </div>
+            
+            <div id="player-controls" class="player-controls">
+                <button id="play-pause-btn" aria-label="Reproducir/Pausar">▶</button>
+                <button id="stop-btn" aria-label="Detener">■</button>
+                <button id="rewind-btn" aria-label="Retroceder 10 segundos">«</button>
+                <button id="forward-btn" aria-label="Avanzar 10 segundos">»</button>
+                <div class="volume-container">
+                    <label for="volume-slider">Volumen:</label>
+                    <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="1" aria-label="Control de volumen">
+                </div>
+                <button id="fullscreen-btn" aria-label="Pantalla completa">⛶</button>
+            </div>
+            <div class="progress-container">
+                <progress id="progress-bar" value="0" max="100"></progress>
+                <span id="current-time-display">0:00</span> / <span id="duration-display">0:00</span>
+            </div>
+        </section>
+
+        <section class="playlist-column">
+            <h2>Lista de Reproducción</h2>
+
+            <div class="file-loader">
+                <label for="file-input" class="file-label">Añadir archivos locales</label>
+                <input type="file" id="file-input" multiple accept="audio/*,video/*">
+                <p id="file-warning">Archivos locales no se guardan entre sesiones.</p>
+            </div>
+
+            <ul id="playlist" class="playlist-list">
+                </ul>
+        </section>
+
+        <section class="calendar-column">
+            <h2>Calendario de Eventos</h2>
+            <div class="calendar-header">
+                <button id="prev-month-btn">‹</button>
+                <h3 id="current-month-year"></h3>
+                <button id="next-month-btn">›</button>
+            </div>
+            <div id="calendar-grid" class="calendar-grid">
+                </div>
+
+            <div class="event-manager">
+                <h3>Gestionar Evento</h3>
+                <form id="event-form">
+                    <input type="hidden" id="event-id">
+                    <div class="form-group">
+                        <label for="event-date">Fecha:</label>
+                        <input type="date" id="event-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="event-desc">Descripción:</label>
+                        <input type="text" id="event-desc" required placeholder="Recordatorio...">
+                    </div>
+                    <div class="form-group">
+                        <label for="event-media-link">Vincular Media:</label>
+                        <select id="event-media-link">
+                            <option value="">Ninguna</option>
+                        </select>
+                    </div>
+                    <button type="submit" id="save-event-btn">Guardar</button>
+                    <button type="button" id="delete-event-btn" class="hidden">Eliminar</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        /**
+         * Aplicación de Reproductor Multimedia y Calendario
+         * (Sin cambios en la lógica de JS, solo CSS)
+         */
+
+        // --- SELECCIÓN DE ELEMENTOS DEL DOM ---
+        const DOMElements = {
+            themeToggle: document.getElementById('theme-toggle'),
+            mediaPlayer: document.getElementById('media-player'),
+            playPauseBtn: document.getElementById('play-pause-btn'),
+            stopBtn: document.getElementById('stop-btn'),
+            rewindBtn: document.getElementById('rewind-btn'),
+            forwardBtn: document.getElementById('forward-btn'),
+            volumeSlider: document.getElementById('volume-slider'),
+            progressBar: document.getElementById('progress-bar'),
+            currentTimeDisplay: document.getElementById('current-time-display'),
+            durationDisplay: document.getElementById('duration-display'),
+            fullscreenBtn: document.getElementById('fullscreen-btn'),
+            fileInput: document.getElementById('file-input'),
+            playlistElement: document.getElementById('playlist'),
+            calendarGrid: document.getElementById('calendar-grid'),
+            currentMonthYear: document.getElementById('current-month-year'),
+            prevMonthBtn: document.getElementById('prev-month-btn'),
+            nextMonthBtn: document.getElementById('next-month-btn'),
+            eventForm: document.getElementById('event-form'),
+            eventIdInput: document.getElementById('event-id'),
+            eventDateInput: document.getElementById('event-date'),
+            eventDescInput: document.getElementById('event-desc'),
+            eventMediaLink: document.getElementById('event-media-link'),
+            saveEventBtn: document.getElementById('save-event-btn'),
+            deleteEventBtn: document.getElementById('delete-event-btn'),
+        };
+
+        // --- ESTADO DE LA APLICACIÓN ---
+        const AppState = {
+            playlist: [], 
+            events: [],
+            currentMediaIndex: -1,
+            calendarDate: new Date(),
+            draggedItemIndex: -1,
+        };
+
+        // --- CONSTANTES ---
+        const LOCAL_STORAGE_KEYS = {
+            theme: 'mediaPlayerTheme_v1_friendly', // Clave actualizada para el nuevo look
+            events: 'mediaPlayerEvents_v1',
+        };
+
+        // ==========================================
+        // INICIALIZACIÓN
+        // ==========================================
+
+        function init() {
+            loadTheme();
+            loadEvents();
+            setupEventListeners();
+            renderCalendar();
+            renderPlaylist();
+            updateEventMediaDropdown();
+        }
+
+        // ==========================================
+        // LÓGICA DE PERSISTENCIA (LocalStorage)
+        // ==========================================
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem(LOCAL_STORAGE_KEYS.theme);
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                DOMElements.themeToggle.checked = true;
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                DOMElements.themeToggle.checked = false;
+            }
+        }
+
+        function saveTheme(theme) {
+            localStorage.setItem(LOCAL_STORAGE_KEYS.theme, theme);
+        }
+
+        function loadEvents() {
+            const savedEvents = localStorage.getItem(LOCAL_STORAGE_KEYS.events);
+            if (savedEvents) {
+                AppState.events = JSON.parse(savedEvents);
+            }
+        }
+
+        function saveEvents() {
+            localStorage.setItem(LOCAL_STORAGE_KEYS.events, JSON.stringify(AppState.events));
+        }
+
+        // ==========================================
+        // CONFIGURACIÓN DE EVENT LISTENERS
+        // ==========================================
+
+        function setupEventListeners() {
+            DOMElements.themeToggle.addEventListener('change', handleThemeToggle);
+            DOMElements.playPauseBtn.addEventListener('click', () => togglePlayPause(false));
+            DOMElements.stopBtn.addEventListener('click', stopMedia);
+            DOMElements.rewindBtn.addEventListener('click', () => seekMedia(-10));
+            DOMElements.forwardBtn.addEventListener('click', () => seekMedia(10));
+            DOMElements.volumeSlider.addEventListener('input', handleVolumeChange);
+            DOMElements.fullscreenBtn.addEventListener('click', toggleFullscreen);
+            DOMElements.mediaPlayer.addEventListener('timeupdate', updateProgressBar);
+            DOMElements.mediaPlayer.addEventListener('loadedmetadata', updateDuration);
+            DOMElements.mediaPlayer.addEventListener('ended', playNextInPlaylist);
+            DOMElements.fileInput.addEventListener('change', handleFileSelect);
+            DOMElements.playlistElement.addEventListener('click', handlePlaylistClick);
+            DOMElements.playlistElement.addEventListener('dragstart', handleDragStart);
+            DOMElements.playlistElement.addEventListener('dragover', handleDragOver);
+            DOMElements.playlistElement.addEventListener('drop', handleDrop);
+            DOMElements.playlistElement.addEventListener('dragend', handleDragEnd);
+            DOMElements.prevMonthBtn.addEventListener('click', showPreviousMonth);
+            DOMElements.nextMonthBtn.addEventListener('click', showNextMonth);
+            DOMElements.calendarGrid.addEventListener('click', handleCalendarDayClick);
+            DOMElements.eventForm.addEventListener('submit', handleEventFormSubmit);
+            DOMElements.deleteEventBtn.addEventListener('click', handleDeleteEvent);
+        }
+
+        // ==========================================
+        // LÓGICA DEL REPRODUCTOR
+        // ==========================================
+
+        function loadMedia(index) {
+            if (index < 0 || index >= AppState.playlist.length) return;
+            const media = AppState.playlist[index];
+            DOMElements.mediaPlayer.src = media.url;
+            AppState.currentMediaIndex = index;
+            renderPlaylist(); 
+            togglePlayPause(true); 
+        }
+        
+        function togglePlayPause(forcePlay = false) {
+            if (!DOMElements.mediaPlayer.src) return;
+            if (DOMElements.mediaPlayer.paused || forcePlay) {
+                DOMElements.mediaPlayer.play().catch(e => console.warn("Auto-play bloqueado:", e));
+                DOMElements.playPauseBtn.textContent = '||';
+                DOMElements.playPauseBtn.setAttribute('aria-label', 'Pausar');
+            } else {
+                DOMElements.mediaPlayer.pause();
+                DOMElements.playPauseBtn.textContent = '▶';
+                DOMElements.playPauseBtn.setAttribute('aria-label', 'Reproducir');
+            }
+        }
+
+        function stopMedia() {
+            DOMElements.mediaPlayer.pause();
+            DOMElements.mediaPlayer.currentTime = 0;
+            DOMElements.playPauseBtn.textContent = '▶';
+        }
+
+        function seekMedia(seconds) {
+            DOMElements.mediaPlayer.currentTime += seconds;
+        }
+
+        function handleVolumeChange() {
+            DOMElements.mediaPlayer.volume = DOMElements.volumeSlider.value;
+        }
+
+        function updateProgressBar() {
+            const progress = (DOMElements.mediaPlayer.currentTime / DOMElements.mediaPlayer.duration) * 100;
+            DOMElements.progressBar.value = progress || 0;
+            DOMElements.currentTimeDisplay.textContent = formatTime(DOMElements.mediaPlayer.currentTime);
+        }
+
+        function updateDuration() {
+            DOMElements.durationDisplay.textContent = formatTime(DOMElements.mediaPlayer.duration);
+        }
+
+        function formatTime(seconds) {
+            const cleanSeconds = isNaN(seconds) ? 0 : seconds;
+            const minutes = Math.floor(cleanSeconds / 60);
+            const secs = Math.floor(cleanSeconds % 60);
+            return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        function playNextInPlaylist() {
+            const nextIndex = (AppState.currentMediaIndex + 1) % AppState.playlist.length;
+            loadMedia(nextIndex);
+        }
+
+        function toggleFullscreen() {
+            const player = DOMElements.mediaPlayer;
+            if (!document.fullscreenElement) {
+                if (player.requestFullscreen) { player.requestFullscreen(); }
+                else if (player.mozRequestFullScreen) { player.mozRequestFullScreen(); } 
+                else if (player.webkitRequestFullscreen) { player.webkitRequestFullscreen(); } 
+                else if (player.msRequestFullscreen) { player.msRequestFullscreen(); } 
+            } else {
+                if (document.exitFullscreen) { document.exitFullscreen(); }
+            }
+        }
+
+        // ==========================================
+        // LÓGICA DE LISTA DE REPRODUCCIÓN
+        // ==========================================
+
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            if (!files.length) return;
+            
+            const newFiles = [];
+            for (const file of files) {
+                const fileURL = URL.createObjectURL(file);
+                newFiles.push({
+                    name: file.name,
+                    url: fileURL
+                });
+            }
+            
+            AppState.playlist.push(...newFiles);
+
+            renderPlaylist();
+            updateEventMediaDropdown();
+            
+            if (AppState.currentMediaIndex === -1 && AppState.playlist.length > 0) {
+                loadMedia(0);
+            }
+        }
+
+        function renderPlaylist() {
+            DOMElements.playlistElement.innerHTML = '';
+            
+            if (AppState.playlist.length === 0) {
+                DOMElements.playlistElement.innerHTML = '<li class="playlist-empty">Carga archivos para empezar.</li>';
+                return;
+            }
+
+            AppState.playlist.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.className = 'playlist-item';
+                li.dataset.index = index;
+                li.setAttribute('draggable', true); 
+
+                if (index === AppState.currentMediaIndex) {
+                    li.classList.add('playing');
+                }
+
+                const nameSpan = document.createElement('span');
+                nameSpan.textContent = item.name;
+
+                const removeBtn = document.createElement('button');
+                removeBtn.textContent = 'X';
+                removeBtn.className = 'remove-btn';
+                removeBtn.setAttribute('aria-label', `Eliminar ${item.name}`);
+                
+                li.appendChild(nameSpan);
+                li.appendChild(removeBtn);
+                DOMElements.playlistElement.appendChild(li);
+            });
+        }
+
+        function handlePlaylistClick(event) {
+            const target = event.target;
+            const listItem = target.closest('.playlist-item');
+            if (!listItem) return;
+            const index = parseInt(listItem.dataset.index, 10);
+
+            if (target.classList.contains('remove-btn')) {
+                const removedItem = AppState.playlist.splice(index, 1)[0];
+                URL.revokeObjectURL(removedItem.url); 
+
+                if (AppState.currentMediaIndex === index) {
+                    stopMedia();
+                    DOMElements.mediaPlayer.src = '';
+                    AppState.currentMediaIndex = -1;
+                } else if (AppState.currentMediaIndex > index) {
+                    AppState.currentMediaIndex--;
+                }
+                
+                renderPlaylist();
+                updateEventMediaDropdown();
+            
+            } else {
+                loadMedia(index);
+            }
+        }
+
+        // --- Lógica de Drag-and-Drop ---
+        function handleDragStart(event) {
+            const item = event.target.closest('.playlist-item');
+            if (!item) return;
+            AppState.draggedItemIndex = parseInt(item.dataset.index, 10);
+            event.dataTransfer.effectAllowed = 'move';
+            setTimeout(() => item.classList.add('dragging'), 0);
+        }
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'move';
+        }
+        function handleDrop(event) {
+            event.preventDefault();
+            const targetItem = event.target.closest('.playlist-item');
+            if (!targetItem) return;
+
+            const droppedOnIndex = parseInt(targetItem.dataset.index, 10);
+            const draggedItem = AppState.playlist[AppState.draggedItemIndex];
+            
+            AppState.playlist.splice(AppState.draggedItemIndex, 1);
+            AppState.playlist.splice(droppedOnIndex, 0, draggedItem);
+
+            if (AppState.currentMediaIndex === AppState.draggedItemIndex) {
+                AppState.currentMediaIndex = droppedOnIndex;
+            } else if (AppState.currentMediaIndex > AppState.draggedItemIndex && AppState.currentMediaIndex <= droppedOnIndex) {
+                AppState.currentMediaIndex--;
+            } else if (AppState.currentMediaIndex < AppState.draggedItemIndex && AppState.currentMediaIndex >= droppedOnIndex) {
+                AppState.currentMediaIndex++;
+            }
+
+            renderPlaylist();
+            updateEventMediaDropdown();
+        }
+        function handleDragEnd() {
+            const draggedElement = document.querySelector('.playlist-item.dragging');
+            if(draggedElement) {
+                draggedElement.classList.remove('dragging');
+            }
+            AppState.draggedItemIndex = -1;
+        }
+
+
+        // ==========================================
+        // LÓGICA DEL CALENDARIO Y EVENTOS
+        // ==========================================
+
+        function renderCalendar() {
+            DOMElements.calendarGrid.innerHTML = '';
+            const date = AppState.calendarDate;
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            DOMElements.currentMonthYear.textContent = `${date.toLocaleString('es-ES', { month: 'long' })} ${year}`;
+
+            const firstDayOfMonth = new Date(year, month, 1).getDay();
+            const startDay = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const daysInPrevMonth = new Date(year, month, 0).getDate();
+            
+            const weekDays = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+            weekDays.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'calendar-header-day';
+                dayHeader.textContent = day;
+                DOMElements.calendarGrid.appendChild(dayHeader);
+            });
+
+            for (let i = 0; i < startDay; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'calendar-day other-month';
+                dayDiv.textContent = daysInPrevMonth - startDay + 1 + i;
+                DOMElements.calendarGrid.appendChild(dayDiv);
+            }
+
+            const todayDateString = new Date().toISOString().split('T')[0];
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'calendar-day';
+                dayDiv.textContent = i;
+                const currentDateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                dayDiv.dataset.date = currentDateString;
+
+                if (currentDateString === todayDateString) {
+                    dayDiv.classList.add('today');
+                }
+                
+                const eventsForDay = AppState.events.filter(e => e.date === currentDateString);
+                eventsForDay.forEach(event => {
+                    const eventDiv = document.createElement('div');
+                    eventDiv.className = 'calendar-day-event';
+                    eventDiv.textContent = event.desc;
+                    eventDiv.dataset.eventId = event.id;
+                    dayDiv.appendChild(eventDiv);
+                });
+                DOMElements.calendarGrid.appendChild(dayDiv);
+            }
+        }
+        function showPreviousMonth() {
+            AppState.calendarDate.setMonth(AppState.calendarDate.getMonth() - 1);
+            renderCalendar();
+        }
+        function showNextMonth() {
+            AppState.calendarDate.setMonth(AppState.calendarDate.getMonth() + 1);
+            renderCalendar();
+        }
+        function handleCalendarDayClick(event) {
+            const dayDiv = event.target.closest('.calendar-day');
+            const eventDiv = event.target.closest('.calendar-day-event');
+            resetEventForm();
+
+            if (eventDiv) {
+                const eventId = parseInt(eventDiv.dataset.eventId, 10);
+                const event = AppState.events.find(e => e.id === eventId);
+                if (event) {
+                    DOMElements.eventIdInput.value = event.id;
+                    DOMElements.eventDateInput.value = event.date;
+                    DOMElements.eventDescInput.value = event.desc;
+                    DOMElements.eventMediaLink.value = event.mediaName || '';
+                    DOMElements.deleteEventBtn.classList.remove('hidden');
+                    
+                    if(event.mediaName) {
+                        const mediaIndex = AppState.playlist.findIndex(m => m.name === event.mediaName);
+                        if (mediaIndex > -1) {
+                            loadMedia(mediaIndex);
+                        }
+                    }
+                }
+            } else if (dayDiv && !dayDiv.classList.contains('other-month')) {
+                DOMElements.eventDateInput.value = dayDiv.dataset.date;
+            }
+        }
+        function handleEventFormSubmit(event) {
+            event.preventDefault();
+            const id = parseInt(DOMElements.eventIdInput.value, 10);
+            const eventData = {
+                date: DOMElements.eventDateInput.value,
+                desc: DOMElements.eventDescInput.value,
+                mediaName: DOMElements.eventMediaLink.value,
+            };
+            if (id) {
+                const index = AppState.events.findIndex(e => e.id === id);
+                if (index > -1) {
+                    AppState.events[index] = { ...AppState.events[index], ...eventData };
+                }
+            } else {
+                eventData.id = Date.now();
+                AppState.events.push(eventData);
+            }
+            saveEvents();
+            renderCalendar();
+            resetEventForm();
+        }
+        function handleDeleteEvent() {
+            const id = parseInt(DOMElements.eventIdInput.value, 10);
+            if (!id) return;
+            AppState.events = AppState.events.filter(e => e.id !== id);
+            saveEvents();
+            renderCalendar();
+            resetEventForm();
+        }
+        function resetEventForm() {
+            DOMElements.eventForm.reset();
+            DOMElements.eventIdInput.value = '';
+            DOMElements.deleteEventBtn.classList.add('hidden');
+        }
+        function updateEventMediaDropdown() {
+            DOMElements.eventMediaLink.innerHTML = '<option value="">Ninguna</option>';
+            AppState.playlist.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.name;
+                option.textContent = item.name;
+                DOMElements.eventMediaLink.appendChild(option);
+            });
+        }
+
+        // ==========================================
+        // LÓGICA DE TEMA
+        // ==========================================
+
+        function handleThemeToggle(event) {
+            if (event.target.checked) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                saveTheme('dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                saveTheme('light');
+            }
+        }
+
+        // --- Iniciar la aplicación ---
+        init();
+
+    </script>
+</body>
+</html>
