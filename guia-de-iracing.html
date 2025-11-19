@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Guía completa para empezar en iRacing: Licencias, iRating, Safety Rating y consejos para Rookies.">
+    <title>Start Your Engine | Guía de Inicio iRacing</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,300;0,500;0,700;1,700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome para Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* ---------------------------------------------------------
+           1. VARIABLES Y RESET (CSS Custom Properties)
+           --------------------------------------------------------- */
+        :root {
+            --bg-primary: #121418;
+            --bg-secondary: #1b1e24;
+            --bg-tertiary: #252a33;
+            
+            --text-main: #e0e0e0;
+            --text-muted: #a0a0a0;
+            
+            --accent-color: #3b82f6; /* iRacing Blue */
+            --accent-hover: #2563eb;
+            --danger-color: #ef4444;
+            
+            /* Colores de Licencias iRacing */
+            --lic-rookie: #ef4444;
+            --lic-d: #f97316;
+            --lic-c: #eab308;
+            --lic-b: #22c55e;
+            --lic-a: #3b82f6;
+            --lic-pro: #000000;
+
+            --font-heading: 'Exo 2', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            
+            --container-width: 1100px;
+            --header-height: 70px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.3s; }
+        ul { list-style: none; }
+        img { max-width: 100%; display: block; }
+
+        /* ---------------------------------------------------------
+           2. UTILIDADES Y LAYOUT
+           --------------------------------------------------------- */
+        .container {
+            max-width: var(--container-width);
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            padding: 80px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-family: var(--font-heading);
+            text-transform: uppercase;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        .btn-primary:hover { background-color: var(--accent-hover); }
+
+        /* ---------------------------------------------------------
+           3. COMPONENTES (Header, Nav)
+           --------------------------------------------------------- */
+        header {
+            background-color: rgba(18, 20, 24, 0.95);
+            height: var(--header-height);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100%;
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-style: italic;
+            color: white;
+        }
+        .logo span { color: var(--accent-color); }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: white;
+        }
+
+        /* Menú Hamburguesa (Mobile) */
+        .hamburger {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* ---------------------------------------------------------
+           4. HERO SECTION
+           --------------------------------------------------------- */
+        #hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: radial-gradient(circle at center, #2a303c 0%, #121418 70%);
+            padding-top: var(--header-height);
+        }
+
+        .hero-content h1 {
+            font-family: var(--font-heading);
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.1;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 60px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .stat-card i { font-size: 2rem; color: var(--accent-color); margin-bottom: 10px; }
+        .stat-card h3 { font-size: 1.2rem; margin-bottom: 5px; }
+        .stat-card p { font-size: 0.9rem; color: var(--text-muted); }
+
+        /* ---------------------------------------------------------
+           5. SISTEMA DE LICENCIAS
+           --------------------------------------------------------- */
+        .license-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .license-card {
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .license-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .license-header {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-heading);
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* Colores dinámicos para las cabeceras */
+        .card-rookie .license-header { background-color: var(--lic-rookie); }
+        .card-d .license-header { background-color: var(--lic-d); }
+        .card-c .license-header { background-color: var(--lic-c); color: #121418; }
+        .card-b .license-header { background-color: var(--lic-b); color: #121418; }
+        .card-a .license-header { background-color: var(--lic-a); }
+
+        .license-body {
+            padding: 20px;
+        }
+
+        .license-body h4 { margin-bottom: 10px; color: var(--text-main); }
+        .license-body p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px; }
+        
+        .requirement-box {
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        .requirement-box strong { display: block; color: var(--accent-color); margin-bottom: 4px; }
+
+        /* ---------------------------------------------------------
+           6. RATINGS (SR & iRating)
+           --------------------------------------------------------- */
+        .ratings-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .rating-info h3 {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+        
+        .rating-info span.highlight { color: var(--accent-color); }
+
+        .rating-visual {
+            background: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 12px;
+        }
+
+        .metric-row {
+            margin-bottom: 25px;
+        }
+        .metric-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #333;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-fill { height: 100%; border-radius: 5px; }
+        .sr-fill { background: linear-gradient(90deg, var(--lic-rookie), var(--lic-b)); width: 70%; }
+        .ir-fill { background: linear-gradient(90deg, #333, var(--accent-color)); width: 40%; }
+
+        /* ---------------------------------------------------------
+           7. CATEGORÍAS INTERACTIVAS (Tabs)
+           --------------------------------------------------------- */
+        .tabs-container {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .tabs-header {
+            display: flex;
+            background: var(--bg-tertiary);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 20px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-family: var(--font-heading);
+            font-size: 1.1rem;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover { background: rgba(255,255,255,0.05); }
+        .tab-btn.active {
+            color: white;
+            border-bottom-color: var(--accent-color);
+            background: rgba(255,255,255,0.02);
+        }
+
+        .tab-content {
+            padding: 40px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .tab-content.active-content { display: block; }
+
+        .category-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .cat-list li {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+        .cat-list li::before {
+            content: '•';
+            color: var(--accent-color);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ---------------------------------------------------------
+           8. FOOTER
+           --------------------------------------------------------- */
+        footer {
+            background: var(--bg-tertiary);
+            padding: 40px 0;
+            text-align: center;
+            color: var(--text-muted);
+            margin-top: 60px;
+            font-size: 0.9rem;
+        }
+
+        /* ---------------------------------------------------------
+           9. RESPONSIVE MEDIA QUERIES
+           --------------------------------------------------------- */
+        @media (max-width: 768px) {
+            :root { --header-height: 60px; }
+            
+            .section-title { font-size: 2rem; }
+            .hero-content h1 { font-size: 2.5rem; }
+            
+            .nav-links {
+                position: fixed;
+                top: var(--header-height);
+                right: -100%;
+                width: 70%;
+                height: calc(100vh - var(--header-height));
+                background: var(--bg-secondary);
+                flex-direction: column;
+                padding: 40px;
+                transition: 0.3s ease-in-out;
+                box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+            }
+            
+            .nav-links.mobile-active { right: 0; }
+            .hamburger { display: block; }
+            
+            .stats-grid { grid-template-columns: 1fr; }
+            .ratings-container { grid-template-columns: 1fr; }
+            .category-details { grid-template-columns: 1fr; }
+            
+            .tabs-header { flex-direction: column; }
+            .tab-btn { border-bottom: 1px solid rgba(255,255,255,0.05); border-left: 3px solid transparent; }
+            .tab-btn.active { border-bottom-color: transparent; border-left-color: var(--accent-color); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="container nav-container">
+            <a href="#" class="logo">SIM<span>RACING</span> GUIDE</a>
+            
+            <nav>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="#inicio">Inicio</a></li>
+                    <li><a href="#ratings">Sistema de Rating</a></li>
+                    <li><a href="#licencias">Licencias</a></li>
+                    <li><a href="#categorias">Categorías</a></li>
+                </ul>
+            </nav>
+            
+            <div class="hamburger" id="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main>
+        
+        <!-- HERO SECTION -->
+        <section id="inicio" class="section">
+            <div class="container">
+                <div id="hero">
+                    <div class="hero-content">
+                        <h1>Domina el Asfalto Virtual</h1>
+                        <p>La guía definitiva "No-Oficial" para entender iRacing. Desde tu primera carrera en Rookie hasta conseguir la licencia Pro.</p>
+                        <a href="#ratings" class="btn btn-primary">Empezar la Guía <i class="fas fa-arrow-down"></i></a>
+
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <i class="fas fa-wallet"></i>
+                                <h3>Suscripción</h3>
+                                <p>Modelo mensual + contenido extra.</p>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-shield-alt"></i>
+                                <h3>Limpieza</h3>
+                                <p>La seguridad en pista es prioritaria.</p>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-trophy"></i>
+                                <h3>Competición</h3>
+                                <p>Matchmaking basado en habilidad.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RATINGS EXPLANATION -->
+        <section id="ratings" class="section">
+            <div class="container">
+                <h2 class="section-title">Los Números que Importan</h2>
+                <p class="section-subtitle">Antes de correr, necesitas entender los dos pilares fundamentales de iRacing.</p>
+
+                <div class="ratings-container">
+                    <div class="rating-info">
+                        <div style="margin-bottom: 30px;">
+                            <h3><i class="fas fa-hard-hat" style="color: var(--lic-c);"></i> Safety Rating (SR)</h3>
+                            <p>Mide qué tan <strong>seguro</strong> eres como conductor. Empiezas con 2.50.</p>
+                            <ul class="cat-list" style="margin-top:10px; color:var(--text-muted);">
+                                <li>Se basa en "Corners per Incident" (Curvas por incidente).</li>
+                                <li>Incidentes (x): Salidas de pista (1x), pérdida de control (2x), contacto (4x).</li>
+                                <li>Necesitas <strong>SR > 3.0</strong> al final de la temporada (o 4.0 instantáneo) para subir de licencia.</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3><i class="fas fa-tachometer-alt" style="color: var(--accent-color);"></i> iRating (iR)</h3>
+                            <p>Mide tu <strong>habilidad</strong> y velocidad. Es oculto en Rookie.</p>
+                            <ul class="cat-list" style="margin-top:10px; color:var(--text-muted);">
+                                <li>Determina en qué "Split" (división) corres.</li>
+                                <li>Es un juego de suma cero: si ganas iR, alguien más lo pierde.</li>
+                                <li>Empiezas con 1350 (oculto).</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="rating-visual">
+                        <div class="metric-row">
+                            <div class="metric-header">
+                                <strong>Safety Rating (Ejemplo)</strong>
+                                <span>3.45 / 4.99</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill sr-fill"></div>
+                            </div>
+                            <small style="color: #aaa; display:block; margin-top:5px;">Subes de licencia al llegar a 4.0</small>
+                        </div>
+
+                        <div class="metric-row">
+                            <div class="metric-header">
+                                <strong>iRating (Ejemplo)</strong>
+                                <span>1850</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill ir-fill"></div>
+                            </div>
+                            <small style="color: #aaa; display:block; margin-top:5px;">Rating promedio. Pro > 6000.</small>
+                        </div>
+                        
+                        <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 5px; border-left: 3px solid var(--danger-color);">
+                            <strong>¡Atención Rookie!</strong><br>
+                            En tu licencia de novato, el iRating no importa. Solo concéntrate en subir tu Safety Rating evitando choques.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LICENSE SYSTEM -->
+        <section id="licencias" class="section">
+            <div class="container">
+                <h2 class="section-title">Escalera de Licencias</h2>
+                <p class="section-subtitle">Tu camino hacia la cima. Cada licencia desbloquea coches más rápidos y complejos.</p>
+                
+                <div class="license-grid">
+                    <!-- Rookie -->
+                    <div class="license-card card-rookie">
+                        <div class="license-header">
+                            <span>ROOKIE</span>
+                            <i class="fas fa-baby-carriage"></i>
+                        </div>
+                        <div class="license-body">
+                            <h4>El Comienzo</h4>
+                            <p>Todos empiezan aquí. Coches básicos, circuitos gratuitos. El objetivo es aprender a conducir limpio.</p>
+                            <div class="requirement-box">
+                                <strong>Coches Típicos:</strong>
+                                Mazda MX-5, Formula Vee
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Class D -->
+                    <div class="license-card card-d">
+                        <div class="license-header">
+                            <span>CLASE D</span>
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <div class="license-body">
+                            <h4>Primer Paso</h4>
+                            <p>Desbloqueas series nacionales y GT4. Aquí empiezas a ver tu iRating.</p>
+                            <div class="requirement-box">
+                                <strong>Requisito:</strong>
+                                SR 3.0 en Rookie + 2 carreras o 4 Time Trials (MPR).
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Class C -->
+                    <div class="license-card card-c">
+                        <div class="license-header">
+                            <span>CLASE C</span>
+                            <i class="fas fa-flag-checkered"></i>
+                        </div>
+                        <div class="license-body">
+                            <h4>Intermedio</h4>
+                            <p>Coches más potentes, paradas en boxes obligatorias en algunas series. GT3, F3, Supercars.</p>
+                            <div class="requirement-box">
+                                <strong>Requisito:</strong>
+                                SR 3.0 en D + 4 carreras MPR en tu clase.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Class B -->
+                    <div class="license-card card-b">
+                        <div class="license-header">
+                            <span>CLASE B</span>
+                            <i class="fas fa-medal"></i>
+                        </div>
+                        <div class="license-body">
+                            <h4>Avanzado</h4>
+                            <p>Competición seria. Series de resistencia, LMP2, grandes óvalos.</p>
+                            <div class="requirement-box">
+                                <strong>Requisito:</strong>
+                                SR 3.0 en C + 4 carreras MPR en tu clase.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Class A -->
+                    <div class="license-card card-a">
+                        <div class="license-header">
+                            <span>CLASE A</span>
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <div class="license-body">
+                            <h4>Élite</h4>
+                            <p>Fórmula 1 moderna (Grand Prix), series IMSA completas.</p>
+                            <div class="requirement-box">
+                                <strong>Requisito:</strong>
+                                SR 3.0 en B + 4 carreras MPR en tu clase.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CATEGORIES TABS -->
+        <section id="categorias" class="section">
+            <div class="container">
+                <h2 class="section-title">Disciplinas</h2>
+                <p class="section-subtitle">iRacing ofrece 4 disciplinas principales. Cada una tiene su propia licencia y rating independiente.</p>
+
+                <div class="tabs-container">
+                    <div class="tabs-header" id="categoryTabs">
+                        <button class="tab-btn active" data-tab="road">Sports Car / Formula</button>
+                        <button class="tab-btn" data-tab="oval">Oval</button>
+                        <button class="tab-btn" data-tab="dirtoval">Dirt Oval</button>
+                        <button class="tab-btn" data-tab="dirtroad">Dirt Road</button>
+                    </div>
+
+                    <div class="tabs-content-area">
+                        <!-- Road -->
+                        <div id="road" class="tab-content active-content">
+                            <div class="category-details">
+                                <div>
+                                    <h3>Sports Car & Formula</h3>
+                                    <p style="margin-top:10px; color:var(--text-muted);">La categoría más popular. Carreras en circuitos de asfalto con giros a izquierda y derecha. Se dividió recientemente en dos licencias separadas, pero comparten la base.</p>
+                                    <br>
+                                    <h4>Estilo de conducción:</h4>
+                                    <p>Precisión en frenada, trazada ideal y gestión de neumáticos.</p>
+                                </div>
+                                <div>
+                                    <h4>Ruta de Inicio Recomendada:</h4>
+                                    <ul class="cat-list" style="margin-top:15px;">
+                                        <li><strong>Rookie:</strong> Global Mazda MX-5 Cup (Coche gratuito muy divertido).</li>
+                                        <li><strong>Rookie:</strong> Formula Vee (Monoplaza sin ayudas electrónicas).</li>
+                                        <li><strong>Clase D:</strong> Ferrari 296 GT3 Challenge (Fijo) o FIA F4.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Oval -->
+                        <div id="oval" class="tab-content">
+                            <div class="category-details">
+                                <div>
+                                    <h3>Oval Pavement</h3>
+                                    <p style="margin-top:10px; color:var(--text-muted);">Carreras americanas puras. NASCAR, IndyCar en óvalos. Girar a la izquierda a 300km/h.</p>
+                                    <br>
+                                    <h4>Estilo de conducción:</h4>
+                                    <p>Gestión del "draft" (rebufo), cuidado extremo de neumáticos y estrategia en paradas.</p>
+                                </div>
+                                <div>
+                                    <h4>Ruta de Inicio Recomendada:</h4>
+                                    <ul class="cat-list" style="margin-top:15px;">
+                                        <li><strong>Rookie:</strong> Street Stock (Charlotte Motor Speedway).</li>
+                                        <li><strong>Clase D:</strong> ARCA Menards Series (El paso natural hacia NASCAR).</li>
+                                        <li><strong>Clase C:</strong> NASCAR Truck Series.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dirt Oval -->
+                        <div id="dirtoval" class="tab-content">
+                            <div class="category-details">
+                                <div>
+                                    <h3>Dirt Oval</h3>
+                                    <p style="margin-top:10px; color:var(--text-muted);">Óvalos de tierra. Sprint cars, Late Models. Mucho derrape controlado.</p>
+                                    <br>
+                                    <h4>Estilo de conducción:</h4>
+                                    <p>Control del acelerador para girar el coche, la pista cambia dinámicamente con el uso.</p>
+                                </div>
+                                <div>
+                                    <h4>Ruta de Inicio Recomendada:</h4>
+                                    <ul class="cat-list" style="margin-top:15px;">
+                                        <li><strong>Rookie:</strong> Dirt Street Stock.</li>
+                                        <li><strong>Clase D:</strong> Dirt 305 Sprint Car.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dirt Road -->
+                        <div id="dirtroad" class="tab-content">
+                            <div class="category-details">
+                                <div>
+                                    <h3>Dirt Road (Rallycross)</h3>
+                                    <p style="margin-top:10px; color:var(--text-muted);">Rallycross y Trucks off-road. Mezcla de asfalto y tierra con saltos.</p>
+                                    <br>
+                                    <h4>Estilo de conducción:</h4>
+                                    <p>Agresivo, uso del freno de mano, gestión de tracción en superficies mixtas.</p>
+                                </div>
+                                <div>
+                                    <h4>Ruta de Inicio Recomendada:</h4>
+                                    <ul class="cat-list" style="margin-top:15px;">
+                                        <li><strong>Rookie:</strong> Rallycross Beetle Lite.</li>
+                                        <li><strong>Rookie:</strong> Pro 2 Lite Off-Road Truck.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 Guía No Oficial de Simracing. Esta web es un proyecto educativo.</p>
+            <p style="font-size: 0.8rem; margin-top: 10px; opacity: 0.6;">iRacing es una marca registrada de iRacing.com Motorsport Simulations.</p>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. Lógica del Menú Hamburguesa (Mobile)
+            const hamburger = document.getElementById('hamburger');
+            const navLinks = document.getElementById('navLinks');
+            const navItems = document.querySelectorAll('.nav-links a');
+
+            hamburger.addEventListener('click', () => {
+                navLinks.classList.toggle('mobile-active');
+                
+                // Cambiar icono
+                const icon = hamburger.querySelector('i');
+                if (navLinks.classList.contains('mobile-active')) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-times');
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            });
+
+            // Cerrar menú al hacer click en un enlace
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    navLinks.classList.remove('mobile-active');
+                    const icon = hamburger.querySelector('i');
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                });
+            });
+
+            // 2. Lógica de Pestañas (Tabs) para Categorías
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Remover clase activa de todos los botones y contenidos
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active-content'));
+
+                    // Añadir clase activa al clickeado
+                    btn.classList.add('active');
+                    
+                    // Mostrar contenido correspondiente
+                    const tabId = btn.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active-content');
+                });
+            });
+
+            // 3. Efecto Smooth Scroll para navegadores antiguos (fallback simple)
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if(target){
+                        // Ajuste por el header fijo
+                        const headerOffset = 80;
+                        const elementPosition = target.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: "smooth"
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
